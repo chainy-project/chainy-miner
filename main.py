@@ -30,6 +30,8 @@ try:
                 ).json()
                 print(f"Calculated job {jobId}")
                 print(response)
+                balance = requests.post(f"{BASE_URL}/balance?address={address}").json()
+                print(f"Your balance is {balance}")
 except Exception as err:
     print(f"Error is {err}")
     os.execv(sys.argv[0], sys.argv)
