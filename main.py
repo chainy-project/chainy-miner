@@ -1,37 +1,106 @@
-import xxhash
-import sys
 import os
-import time
+from loguru import logger
 import requests
+import xxhash
+import threading
+import time
+from cpuinfo import get_cpu_info_json
+import json
 
-print("Welcome to Chainy Miner v1.0")
+# Настройка майнера
+
+debug = False
+BASE_URL = "http://45.138.72.87"
+DIFF = 7500000
+
+
+# Настройка майнера
+
+
+logger.info("Welcome to Chainy Miner v2.0")
+
+# PARSING START
+
 try:
     os.mkdir(".chainy")
 except Exception:
     pass
-BASE_URL = "http://45.138.72.87"
+
+
 try:
     address = open(".chainy/addr").read()
-    print(f"Starting mining on {address}")
+    logger.info(f"Starting mining on {address}")
 except Exception:
     address = str(input("Enter your address:"))
     open(".chainy/addr", "w").write(address)
-try:
-    while True:
-        a = requests.post(f"{BASE_URL}/getJob?address={address}").json()
-        hashs = a["hash"]
-        jobId = a["jobId"]
-        print(f"Getted job {jobId} with  {hashs} hash.")
-        for nonce in range(7500000 + 1):
-            hashk = xxhash.xxh64(f"{hashs}{nonce}").hexdigest()
-            if hashk == a["jobEnd"]:
-                response = requests.post(
-                    f"{BASE_URL}/submitJob?address={address}&jobId={jobId}&nonce={nonce}"
-                ).json()
-                print(f"Calculated job {jobId}")
-                print(response)
-                balance = requests.post(f"{BASE_URL}/balance?address={address}").json()
-                print(f"Your balance is {balance}")
-except Exception as err:
-    print(f"Error is {err}")
-    os.execv(sys.argv[0], sys.argv)
+
+cpu = get_cpu_info_json()
+threads = json.loads(cpu)
+threads = threads["count"]
+
+# PARSING STOP
+
+# JOB PARSER START
+
+
+def parseJob(job, type):
+    return job[f"{type}"]
+
+
+# JOB PARSER STOP
+
+
+# MINER START
+def miner(address, job):
+    global lockPool
+    jobId = parseJob(job, "jobId")
+    _hash = parseJob(job, "hash")
+    taskhash = parseJob(job, "jobEnd")
+    for nonce in range(DIFF + 1):
+        curhash = xxhash.xxh64(f"{_hash}{nonce}").hexdigest()
+        if licvid:
+            if debug:
+                logger.debug("licvid work")
+            break
+        if curhash == taskhash:
+            logger.info(f"Calculated job {jobId} with {nonce} nonce. ")
+            if debug:
+                logger.debug("Sending request to server")
+            response = requests.post(
+                f"{BASE_URL}/submitJob?address={address}&jobId={jobId}&nonce={nonce}"
+            ).json()
+            if debug:
+                logger.debug(response)
+            lockPool = False
+        if licvid:
+            if debug:
+                logger.debug("licvid work")
+            break
+
+
+# MINER STOP
+
+# POOLER START
+lockPool = False
+while True:
+    if not lockPool:
+        licvid = True
+        time.sleep(1)
+        licvid = False
+        for i in range(threads):
+            job = requests.post(f"{BASE_URL}/getJob?address={address}").json()
+            x = threading.Thread(target=miner, args=(address, job))
+            jobId = parseJob(job, "jobId")
+            x.name = f"Jobber-{jobId}"
+
+            x.start()
+            lockPool = True
+            _jobId = jobId + threads
+        _hash = parseJob(job, "hash")
+        logger.info(
+            f"Getted {threads} jobs from {jobId} to {_jobId}  with  {_hash} hash."
+        )
+    time.sleep(0.5)
+
+
+# POOLER STOP
