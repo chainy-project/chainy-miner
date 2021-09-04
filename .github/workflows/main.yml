@@ -30,7 +30,7 @@ jobs:
         run: python3 -m pip install nuitka
       - name: Compile exe
         run: |
-         python3 -m nuitka main.py
+         python3 -m nuitka --follow-imports main.py
          ls
 
       # Runs a set of commands using the runners shell
