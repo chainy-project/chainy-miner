@@ -38,8 +38,8 @@ jobs:
         uses: actions/upload-artifact@v2.2.4
         with:
         # Artifact name
-           name: miner.exe
+           name: bin/
            # A file, directory or wildcard pattern that describes what to upload
-           path: main.dist/main.exe
+           path: main.bin/
            # The desired behavior if no files are found using the provided path.
        
