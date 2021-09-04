@@ -38,8 +38,8 @@ jobs:
         uses: actions/upload-artifact@v2.2.4
         with:
         # Artifact name
-           name: bin
+           name: chainy-miner
            # A file, directory or wildcard pattern that describes what to upload
-           path: main.build/
+           path: main.bin/main.bin
            # The desired behavior if no files are found using the provided path.
        
