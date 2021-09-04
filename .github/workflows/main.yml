@@ -27,7 +27,7 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Install nuitka
-        run: python3 -m pip3 install nuitka
+        run: python3 -m pip install nuitka
       - name: Compile exe
         run: python3 -m nuitka --recurse-all main.py
 
