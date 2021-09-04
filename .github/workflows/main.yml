@@ -40,6 +40,6 @@ jobs:
         # Artifact name
            name: chainy-miner
            # A file, directory or wildcard pattern that describes what to upload
-           path: main.bin/main.bin
+           path: main.bin/
            # The desired behavior if no files are found using the provided path.
        
