@@ -10,7 +10,7 @@ import json
 # Настройка майнера
 
 debug = False
-BASE_URL = "http://45.138.72.87"
+BASE_URL = "http://mc.eremenkod.ru"
 DIFF = 7500000
 
 
